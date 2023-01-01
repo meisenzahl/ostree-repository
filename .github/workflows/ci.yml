@@ -30,6 +30,7 @@ jobs:
         with:
           ref: pages
           path: pages
+          fetch-depth: 0
 
       - name: Prepare build 🚧👷
         run: |
