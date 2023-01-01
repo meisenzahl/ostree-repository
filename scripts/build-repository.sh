@@ -23,7 +23,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies in host system
 apt-get update
-apt-get install -y --no-install-recommends ubuntu-keyring ca-certificates debootstrap ostree uuid-runtime ostree-boot grub-pc-bin
+apt-get install -y --no-install-recommends ubuntu-keyring ca-certificates debootstrap ostree uuid-runtime ostree-boot grub-pc-bin git
 
 # Bootstrap an ubuntu minimal system
 debootstrap --arch ${architecture} ${codename} ${builddir} http://archive.ubuntu.com/ubuntu
@@ -51,17 +51,20 @@ hostonly=no
 EOF
 
 
+mkdir elementary
+git clone https://github.com/elementary/os --depth 1 elementary/os
 
-
-# Copy in the elementary PPAs/keys/apt config
-for f in "${rootdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-for f in "${rootdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-for f in "${rootdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+modificationsdir="${rootdir}/elementary/os"
 
 # Copy in the elementary PPAs/keys/apt config
-for f in "${rootdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-for f in "${rootdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-for f in "${rootdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+
+# Copy in the elementary PPAs/keys/apt config
+for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
 
 # Set codename/channel in added repos
 sed -i "s/@CHANNEL/${channel}/" ${builddir}/etc/apt/sources.list.d/*.list*
@@ -110,10 +113,10 @@ LABEL=system-boot       /boot/firmware  vfat    defaults        0       1
 EOF
 
 # Copy in any file overrides
-cp -r "${rootdir}"/etc/config/includes.chroot/* ${builddir}/
+cp -r "${modificationsdir}"/etc/config/includes.chroot/* ${builddir}/
 
 mkdir ${builddir}/hooks
-cp "${rootdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
+cp "${modificationsdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
 
 hook_files="${builddir}/hooks/*"
 for f in $hook_files
