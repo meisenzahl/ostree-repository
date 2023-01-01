@@ -245,7 +245,7 @@ ln -s /run/media "${builddir}"/media
 # Now ready to commit. Make the repo if necessary. An archive-z2 repo
 # is used since the intention is to use this repo to serve updates
 # from.
-if [ ! -d "${ostree_repo_dir}" ], then
+if [ ! -d "${ostree_repo_dir}" ]; then
     mkdir -p "${ostree_repo_dir}"
 fi
 
