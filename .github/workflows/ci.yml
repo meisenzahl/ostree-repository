@@ -34,7 +34,7 @@ jobs:
       - name: Prepare build 🚧👷
         run: |
           mkdir -p artifacts
-          if [ ! -d pages/ostree ]; mkdir pages/ostree; fi
+          if [ ! -d pages/ostree ]; then mkdir pages/ostree; fi
           if [ -d pages/ostree ]; then ln -s pages/ostree artifacts/ostree; fi
 
       - name: Build repository 🚧🔨
