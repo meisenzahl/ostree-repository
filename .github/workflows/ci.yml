@@ -19,20 +19,20 @@ jobs:
       options: --privileged
 
     steps:
-      - name: Clone build scripts
+      - name: Pull changes ⬇️
         uses: actions/checkout@v3
 
-      - name: Build repository
-        run: |
-          ./scripts/build-repository.sh
+      - name: Build repository 🚧🔨
+        run: ./scripts/build-repository.sh
 
-      - name: Create artifacts archive
-        run: |
-          tar -czvf artifacts.tar.gz artifacts
+      - name: Cleanup 🚧🧹
+        run: rm -rf artifacts/io.elementary.desktop
 
-      - name: Archive artifacts
+      - name: Bundle artifacts 📦🔨
+        run: tar -czvf artifacts.tar.gz artifacts
+
+      - name: Upload artifacts 📦⬆️
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: |
-            artifacts.tar.gz
+          path: artifacts.tar.gz

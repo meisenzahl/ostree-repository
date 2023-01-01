@@ -9,6 +9,7 @@ export architecture=amd64
 export channel=daily
 export codename=jammy
 export packages="systemd-sysv linux-image-generic grub-pc ostree-boot elementary-minimal elementary-desktop elementary-standard"
+export packages="systemd-sysv linux-image-generic grub-pc ostree-boot elementary-minimal elementary-standard"
 export version=7
 export flatpak_architecture=x86_64
 export ostree_branch="io.elementary.desktop/${flatpak_architecture}/${version}"
