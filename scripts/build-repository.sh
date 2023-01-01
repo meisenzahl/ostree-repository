@@ -245,7 +245,10 @@ ln -s /run/media "${builddir}"/media
 # Now ready to commit. Make the repo if necessary. An archive-z2 repo
 # is used since the intention is to use this repo to serve updates
 # from.
-mkdir -p "${ostree_repo_dir}"
+if [ ! -d "${ostree_repo_dir}" ], then
+    mkdir -p "${ostree_repo_dir}"
+fi
+
 if [ ! -f "${ostree_repo_dir}"/config ]; then
     echo "Initialiazing OSTree repo ${ostree_repo_dir}"
     ostree --repo="${ostree_repo_dir}" init --mode=archive-z2
