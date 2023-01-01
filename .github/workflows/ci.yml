@@ -52,8 +52,12 @@ jobs:
           CI_COMMIT_AUTHOR: Continuous Integration
         run: |
           cd pages
+          echo "#### Configure"
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "username@users.noreply.github.com"
+          echo "#### Add"
           git add -A
+          echo "#### Commit"
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          echo "#### Push"
           git push
