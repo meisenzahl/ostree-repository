@@ -21,3 +21,14 @@ jobs:
     steps:
     - name: Clone build scripts
       uses: actions/checkout@v3
+
+    - name: Build repository
+      run: |
+        ./scripts/build-repository.sh
+
+    - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: |
+            artifacts
