@@ -28,7 +28,7 @@ jobs:
       - name: Pull repository ⬇️
         run: |
           apt-get update -qq
-          apt-get install -qqy git
+          apt-get install -qqy git git-lfs
           git clone -b pages https://github.com/meisenzahl/ostree-repository pages
 
       - name: Prepare build 🚧👷
