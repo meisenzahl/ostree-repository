@@ -9,7 +9,7 @@ export architecture=amd64
 export channel=daily
 export codename=jammy
 export packages="systemd-sysv linux-image-generic grub-pc ostree-boot elementary-minimal elementary-desktop elementary-standard"
-export packages="systemd-sysv linux-image-generic grub-pc ostree-boot elementary-minimal elementary-standard flatpak"
+export packages="systemd-sysv linux-image-generic grub-pc ostree-boot"
 export version=7
 export flatpak_architecture=x86_64
 export ostree_branch="io.elementary.desktop/${flatpak_architecture}/${version}"
@@ -35,9 +35,14 @@ deb http://archive.ubuntu.com/ubuntu ${codename} main restricted universe multiv
 deb http://archive.ubuntu.com/ubuntu ${codename}-updates main restricted universe multiverse
 EOF
 
-
-
-
+# TODO(meisenzahl): configure mount points based on `ostree admin deploy`
+# Configure mount points
+cat << EOF > ${builddir}/etc/fstab
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc /proc proc nodev,noexec,nosuid 0  0
+LABEL=writable    /     ext4    defaults    0 0
+LABEL=system-boot       /boot/firmware  vfat    defaults        0       1
+EOF
 
 # Based on https://github.com/dbnicholson/deb-ostree-builder/blob/15d8fe91af21592bf323fbf9aaf03b86bbe7359d/deb-ostree-builder
 # Ensure that dracut makes generic initramfs instead of looking just
@@ -52,86 +57,75 @@ hostonly=no
 EOF
 
 
-mkdir elementary
-git clone https://github.com/elementary/os --depth 1 elementary/os
+# mkdir elementary
+# git clone https://github.com/elementary/os --depth 1 elementary/os
 
-modificationsdir="${rootdir}/elementary/os"
+# modificationsdir="${rootdir}/elementary/os"
 
-# Copy in the elementary PPAs/keys/apt config
-for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+# # Copy in the elementary PPAs/keys/apt config
+# for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+# for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+# for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
 
-# Copy in the elementary PPAs/keys/apt config
-for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+# # Copy in the elementary PPAs/keys/apt config
+# for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+# for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+# for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
 
-# Set codename/channel in added repos
-sed -i "s/@CHANNEL/${channel}/" ${builddir}/etc/apt/sources.list.d/*.list*
-sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/sources.list.d/*.list*
+# # Set codename/channel in added repos
+# sed -i "s/@CHANNEL/${channel}/" ${builddir}/etc/apt/sources.list.d/*.list*
+# sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/sources.list.d/*.list*
 
-# Set codename in added preferences
-sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/preferences.d/*.pref*
+# # Set codename in added preferences
+# sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/preferences.d/*.pref*
 
-mount -t proc proc ${builddir}/proc
-mount -t sysfs sys ${builddir}/sys
-mount -o bind /dev/ ${builddir}/dev/
-mount -o bind /dev/pts ${builddir}/dev/pts
+# mount -t proc proc ${builddir}/proc
+# mount -t sysfs sys ${builddir}/sys
+# mount -o bind /dev/ ${builddir}/dev/
+# mount -o bind /dev/pts ${builddir}/dev/pts
 
-# Make a third stage that installs all of the metapackages
-cat << EOF > ${builddir}/third-stage
-#!/bin/bash
-apt-get update
-apt-get --yes upgrade
-apt-get --yes install $packages
-rm -f /third-stage
-EOF
+# # Make a third stage that installs all of the metapackages
+# cat << EOF > ${builddir}/third-stage
+# #!/bin/bash
+# apt-get update
+# apt-get --yes upgrade
+# apt-get --yes install $packages
+# rm -f /third-stage
+# EOF
 
-chmod +x ${builddir}/third-stage
-LANG=C chroot ${builddir} /third-stage
+# chmod +x ${builddir}/third-stage
+# LANG=C chroot ${builddir} /third-stage
 
-echo "elementary" > ${builddir}/etc/hostname
+# echo "elementary" > ${builddir}/etc/hostname
 
-cat << EOF > ${builddir}/etc/hosts
-127.0.0.1       elementary    localhost
-::1             localhost ip6-localhost ip6-loopback
-fe00::0         ip6-localnet
-ff00::0         ip6-mcastprefix
-ff02::1         ip6-allnodes
-ff02::2         ip6-allrouters
-EOF
+# cat << EOF > ${builddir}/etc/hosts
+# 127.0.0.1       elementary    localhost
+# ::1             localhost ip6-localhost ip6-loopback
+# fe00::0         ip6-localnet
+# ff00::0         ip6-mcastprefix
+# ff02::1         ip6-allnodes
+# ff02::2         ip6-allrouters
+# EOF
 
+# # Copy in any file overrides
+# cp -r "${modificationsdir}"/etc/config/includes.chroot/* ${builddir}/
 
+# mkdir ${builddir}/hooks
+# cp "${modificationsdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
 
-# TODO(meisenzahl): configure mount points based on `ostree admin deploy`
-# Configure mount points
-cat << EOF > ${builddir}/etc/fstab
-# <file system> <mount point>   <type>  <options>       <dump>  <pass>
-proc /proc proc nodev,noexec,nosuid 0  0
-LABEL=writable    /     ext4    defaults    0 0
-LABEL=system-boot       /boot/firmware  vfat    defaults        0       1
-EOF
+# hook_files="${builddir}/hooks/*"
+# for f in $hook_files
+# do
+#     base=$(basename "${f}")
+#     LANG=C chroot ${builddir} "/hooks/${base}"
+# done
 
-# Copy in any file overrides
-cp -r "${modificationsdir}"/etc/config/includes.chroot/* ${builddir}/
+# rm -r "${builddir}/hooks"
 
-mkdir ${builddir}/hooks
-cp "${modificationsdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
-
-hook_files="${builddir}/hooks/*"
-for f in $hook_files
-do
-    base=$(basename "${f}")
-    LANG=C chroot ${builddir} "/hooks/${base}"
-done
-
-rm -r "${builddir}/hooks"
-
-umount ${builddir}/dev/pts
-umount ${builddir}/dev/
-umount ${builddir}/sys
-umount ${builddir}/proc
+# umount ${builddir}/dev/pts
+# umount ${builddir}/dev/
+# umount ${builddir}/sys
+# umount ${builddir}/proc
 
 
 
