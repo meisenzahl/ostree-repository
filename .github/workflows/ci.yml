@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    container:
+      image: debian:latest
+      volumes:
+        - /proc:/proc
+      options: --privileged
+
+    steps:
+    - name: Clone build scripts
+      uses: actions/checkout@v3
