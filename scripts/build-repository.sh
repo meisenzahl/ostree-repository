@@ -57,27 +57,27 @@ hostonly=no
 EOF
 
 
-# mkdir elementary
-# git clone https://github.com/elementary/os --depth 1 elementary/os
+mkdir elementary
+git clone https://github.com/elementary/os --depth 1 elementary/os
 
-# modificationsdir="${rootdir}/elementary/os"
+modificationsdir="${rootdir}/elementary/os"
 
-# # Copy in the elementary PPAs/keys/apt config
-# for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-# for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-# for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+# Copy in the elementary PPAs/keys/apt config
+for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
 
-# # Copy in the elementary PPAs/keys/apt config
-# for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
-# for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
-# for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
+# Copy in the elementary PPAs/keys/apt config
+for f in "${modificationsdir}"/etc/config/archives/*.list; do cp -- "$f" "${builddir}/etc/apt/sources.list.d/$(basename -- "$f")"; done
+for f in "${modificationsdir}"/etc/config/archives/*.key; do cp -- "$f" "${builddir}/etc/apt/trusted.gpg.d/$(basename -- "$f").asc"; done
+for f in "${modificationsdir}"/etc/config/archives/*.pref; do cp -- "$f" "${builddir}/etc/apt/preferences.d/$(basename -- "$f")"; done
 
-# # Set codename/channel in added repos
-# sed -i "s/@CHANNEL/${channel}/" ${builddir}/etc/apt/sources.list.d/*.list*
-# sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/sources.list.d/*.list*
+# Set codename/channel in added repos
+sed -i "s/@CHANNEL/${channel}/" ${builddir}/etc/apt/sources.list.d/*.list*
+sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/sources.list.d/*.list*
 
-# # Set codename in added preferences
-# sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/preferences.d/*.pref*
+# Set codename in added preferences
+sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/preferences.d/*.pref*
 
 mount -t proc proc ${builddir}/proc
 mount -t sysfs sys ${builddir}/sys
@@ -96,31 +96,31 @@ EOF
 chmod +x ${builddir}/third-stage
 LANG=C chroot ${builddir} /third-stage
 
-# echo "elementary" > ${builddir}/etc/hostname
+echo "elementary" > ${builddir}/etc/hostname
 
-# cat << EOF > ${builddir}/etc/hosts
-# 127.0.0.1       elementary    localhost
-# ::1             localhost ip6-localhost ip6-loopback
-# fe00::0         ip6-localnet
-# ff00::0         ip6-mcastprefix
-# ff02::1         ip6-allnodes
-# ff02::2         ip6-allrouters
-# EOF
+cat << EOF > ${builddir}/etc/hosts
+127.0.0.1       elementary    localhost
+::1             localhost ip6-localhost ip6-loopback
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+EOF
 
-# # Copy in any file overrides
-# cp -r "${modificationsdir}"/etc/config/includes.chroot/* ${builddir}/
+# Copy in any file overrides
+cp -r "${modificationsdir}"/etc/config/includes.chroot/* ${builddir}/
 
-# mkdir ${builddir}/hooks
-# cp "${modificationsdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
+mkdir ${builddir}/hooks
+cp "${modificationsdir}"/etc/config/hooks/live/*.chroot ${builddir}/hooks
 
-# hook_files="${builddir}/hooks/*"
-# for f in $hook_files
-# do
-#     base=$(basename "${f}")
-#     LANG=C chroot ${builddir} "/hooks/${base}"
-# done
+hook_files="${builddir}/hooks/*"
+for f in $hook_files
+do
+    base=$(basename "${f}")
+    LANG=C chroot ${builddir} "/hooks/${base}"
+done
 
-# rm -r "${builddir}/hooks"
+rm -r "${builddir}/hooks"
 
 umount ${builddir}/dev/pts
 umount ${builddir}/dev/
