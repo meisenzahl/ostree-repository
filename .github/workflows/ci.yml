@@ -27,6 +27,7 @@ jobs:
 
       - name: Pull repository ⬇️
         run: |
+          apt-get update -qq
           apt-get install -qqy git
           git clone ${{ github.repository }} -b pages pages
 
