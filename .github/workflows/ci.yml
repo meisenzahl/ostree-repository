@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare build 🚧👷
         run: |
-          find pages
+          ls -la pages/
           exit 1
 
       - name: Prepare build 🚧👷
