@@ -79,22 +79,22 @@ EOF
 # # Set codename in added preferences
 # sed -i "s/@BASECODENAME/${codename}/" ${builddir}/etc/apt/preferences.d/*.pref*
 
-# mount -t proc proc ${builddir}/proc
-# mount -t sysfs sys ${builddir}/sys
-# mount -o bind /dev/ ${builddir}/dev/
-# mount -o bind /dev/pts ${builddir}/dev/pts
+mount -t proc proc ${builddir}/proc
+mount -t sysfs sys ${builddir}/sys
+mount -o bind /dev/ ${builddir}/dev/
+mount -o bind /dev/pts ${builddir}/dev/pts
 
-# # Make a third stage that installs all of the metapackages
-# cat << EOF > ${builddir}/third-stage
-# #!/bin/bash
-# apt-get update
-# apt-get --yes upgrade
-# apt-get --yes install $packages
-# rm -f /third-stage
-# EOF
+# Make a third stage that installs all of the metapackages
+cat << EOF > ${builddir}/third-stage
+#!/bin/bash
+apt-get update
+apt-get --yes upgrade
+apt-get --yes install $packages
+rm -f /third-stage
+EOF
 
-# chmod +x ${builddir}/third-stage
-# LANG=C chroot ${builddir} /third-stage
+chmod +x ${builddir}/third-stage
+LANG=C chroot ${builddir} /third-stage
 
 # echo "elementary" > ${builddir}/etc/hostname
 
@@ -122,10 +122,10 @@ EOF
 
 # rm -r "${builddir}/hooks"
 
-# umount ${builddir}/dev/pts
-# umount ${builddir}/dev/
-# umount ${builddir}/sys
-# umount ${builddir}/proc
+umount ${builddir}/dev/pts
+umount ${builddir}/dev/
+umount ${builddir}/sys
+umount ${builddir}/proc
 
 
 
