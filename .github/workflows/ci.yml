@@ -26,9 +26,13 @@ jobs:
         run: |
           ./scripts/build-repository.sh
 
-      - name: Archive production artifacts
+      - name: Create artifacts archive
+        run: |
+          tar -czvf artifacts.tar.gz artifacts
+
+      - name: Archive artifacts
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
           path: |
-            artifacts
+            artifacts.tar.gz
