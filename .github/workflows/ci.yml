@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: debian:latest
+      image: ubuntu:22.04
       volumes:
         - /proc:/proc
       options: --privileged
