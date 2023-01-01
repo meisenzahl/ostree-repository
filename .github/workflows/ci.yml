@@ -60,4 +60,5 @@ jobs:
       - name: Push repository 🔄⬆️
         uses: ad-m/github-push-action@master
         with:
+          branch: pages
           directory: pages
