@@ -25,17 +25,32 @@ jobs:
       - name: Pull changes ⬇️
         uses: actions/checkout@v3
 
+      - name: Pull repository ⬇️
+        uses: actions/checkout@v3
+        ref: pages
+        path: pages
+
+      - name: Prepare build 🚧👷
+        run: |
+          mkdir -p artifacts
+          if [ -d pages/ostree ]; then ln -s pages/ostree artifacts/ostree; fi
+
       - name: Build repository 🚧🔨
-        run: ./scripts/build-repository.sh
+        run: |
+          ./scripts/build-repository.sh
 
       - name: Cleanup 🚧🧹
-        run: rm -rf artifacts/io.elementary.desktop
+        run: |
+          unlink artifacts/ostree
+          rm -rf artifacts/io.elementary.desktop
 
-      - name: Bundle artifacts 📦🔨
-        run: tar -czvf artifacts.tar.gz artifacts
-
-      - name: Upload artifacts 📦⬆️
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: artifacts.tar.gz
+      - name: Update repository 🔄
+          env: 
+            CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
+            CI_COMMIT_AUTHOR: Continuous Integration
+          run: |
+            cd pages
+            git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+            git config --global user.email "username@users.noreply.github.com"
+            git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
+            git push
