@@ -31,10 +31,8 @@ jobs:
           apt-get install -qqy git
           git clone https://github.com/${{ github.repository }} -b pages pages
 
-      - name: Prepare build 🚧👷
-        run: |
-          ls -la pages/
-          exit 1
+
+
 
       - name: Prepare build 🚧👷
         run: |
