@@ -29,10 +29,7 @@ jobs:
         run: |
           apt-get update -qq
           apt-get install -qqy git
-          git clone https://github.com/${{ github.repository }} -b pages pages
-
-
-
+          git clone https://github.com/meisenzahl/ostree-repository -b pages pages
 
       - name: Prepare build 🚧👷
         run: |
