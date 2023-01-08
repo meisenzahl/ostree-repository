@@ -31,10 +31,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: Pull last OSTree commit ⬇️
+      - name: Install dependencies
         run: |
           apt-get update -qq -y
           apt-get install -qq -y ostree
+
+      - name: Pull last OSTree commit ⬇️
+        run: |
+          ostree --repo=repo init --mode=archive-z2
+          ostree remote add --if-not-exists --no-gpg-verify --repo=repo meisenzahl 'http://ostree.meisenzahl.me/'
+          ostree pull --depth=1 --repo=repo meisenzahl io.elementary.desktop/x86_64/7
 
 
       # - name: Build repository 🚧🔨
