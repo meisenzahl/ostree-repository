@@ -25,17 +25,29 @@ jobs:
       - name: Pull changes ⬇️
         uses: actions/checkout@v3
 
-      - name: Build repository 🚧🔨
-        run: ./scripts/build-repository.sh
-
-      - name: Cleanup 🚧🧹
-        run: rm -rf artifacts/io.elementary.desktop
-
-      - name: Bundle artifacts 📦🔨
-        run: tar -czvf artifacts.tar.gz artifacts
-
-      - name: Upload artifacts 📦⬆️
-        uses: actions/upload-artifact@v3
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          name: artifacts
-          path: artifacts.tar.gz
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Pull last OSTree commit ⬇️
+        run: |
+          apt-get update -qq -y
+          apt-get install -qq -y ostree
+
+
+      # - name: Build repository 🚧🔨
+      #   run: ./scripts/build-repository.sh
+
+      # - name: Cleanup 🚧🧹
+      #   run: rm -rf artifacts/io.elementary.desktop
+
+      # - name: Bundle artifacts 📦🔨
+      #   run: tar -czvf artifacts.tar.gz artifacts
+
+      # - name: Upload artifacts 📦⬆️
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: artifacts
+      #     path: artifacts.tar.gz
