@@ -37,10 +37,7 @@ EOF
 # TODO(meisenzahl): configure mount points based on `ostree admin deploy`
 # Configure mount points
 cat << EOF > ${builddir}/etc/fstab
-# <file system> <mount point>   <type>  <options>       <dump>  <pass>
-proc /proc proc nodev,noexec,nosuid 0  0
-LABEL=writable    /     ext4    defaults    0 0
-LABEL=system-boot       /boot/firmware  vfat    defaults        0       1
+LABEL=ostree / ext4  errors=remount-ro 0 0
 EOF
 
 # Based on https://github.com/dbnicholson/deb-ostree-builder/blob/15d8fe91af21592bf323fbf9aaf03b86bbe7359d/deb-ostree-builder
