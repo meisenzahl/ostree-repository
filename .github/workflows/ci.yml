@@ -47,6 +47,14 @@ jobs:
         run: |
           ostree pull --depth=1 --repo=repo meisenzahl-daily io.elementary.desktop/x86_64/7
 
+      - name: Prepare build 🚧👷
+        run: |
+          mkdir -p artifacts
+          ln -s ../repo artifacts/repo
+
+      - name: Build repository 🚧🔨
+        run: ./scripts/build-repository.sh
+
       - name: Push OSTree commit 📦⬆️
         run: |
           ostree-push --repo repo ostree@ostree.meisenzahl.me:/srv/ostree/repo/daily

@@ -14,7 +14,7 @@ export flatpak_architecture=x86_64
 export ostree_branch="io.elementary.desktop/${flatpak_architecture}/${version}"
 
 builddir=artifacts/${ostree_branch}
-ostree_repo_dir=artifacts/ostree
+ostree_repo_dir=artifacts/repo
 
 mkdir -p ${builddir}
 
