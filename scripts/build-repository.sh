@@ -153,22 +153,6 @@ rm -rf "${builddir}"/tmp "${builddir}"/var/tmp
 mkdir -p "${builddir}"/tmp "${builddir}"/var/tmp
 chmod 1777 "${builddir}"/tmp "${builddir}"/var/tmp
 
-# Remove warnings from ostree admin deploy
-rm -rf \
-    "${builddir}"/var/lock \
-    "${builddir}"/var/run \
-    "${builddir}"/var/backups \
-    "${builddir}"/var/cache \
-    "${builddir}"/var/crash \
-    "${builddir}"/var/lib \
-    "${builddir}"/var/local \
-    "${builddir}"/var/log \
-    "${builddir}"/var/mail \
-    "${builddir}"/var/metrics \
-    "${builddir}"/var/opt \
-    "${builddir}"/var/spool \
-    "${builddir}"/var/tmp
-
 # OSTree uses a single checksum of the combined kernel and initramfs
 # to manage boot. Determine the checksum and rename the files the way
 # OSTree expects.
@@ -236,6 +220,22 @@ d /var/local 0755 root root -
 d /run/media 0755 root root -
 L /var/lib/dpkg - - - - ../../usr/share/dpkg/database
 EOF
+
+# Remove warnings from ostree admin deploy
+rm -rf \
+    "${builddir}"/var/lock \
+    "${builddir}"/var/run \
+    "${builddir}"/var/backups \
+    "${builddir}"/var/cache \
+    "${builddir}"/var/crash \
+    "${builddir}"/var/lib \
+    "${builddir}"/var/local \
+    "${builddir}"/var/log \
+    "${builddir}"/var/mail \
+    "${builddir}"/var/metrics \
+    "${builddir}"/var/opt \
+    "${builddir}"/var/spool \
+    "${builddir}"/var/tmp
 
 # Create symlinks in the ostree for persistent directories.
 mkdir -p "${builddir}"/sysroot
