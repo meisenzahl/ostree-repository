@@ -1,0 +1,72 @@
+name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:22.04
+      volumes:
+        - /proc:/proc
+      options: --privileged
+
+    steps:
+      - name: Pull changes ⬇️
+        uses: actions/checkout@v3
+
+      - name: Install SSH key ⚙️
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Install dependencies ⬇️
+        run: |
+          apt-get update -qq -y
+          apt-get install -qq -y ostree
+          apt-get install -qq -y git libcairo2-dev libostree-dev pkg-config python3-pip
+          pip install "ostree-push @ git+https://github.com/dbnicholson/ostree-push@v1.1.0"
+
+      - name: Setup OSTree repository 📦⚙️
+        run: |
+          ostree --repo=repo init --mode=archive-z2
+          ostree remote add --if-not-exists --no-gpg-verify --repo=repo meisenzahl-daily 'http://ostree.meisenzahl.me/repo/daily'
+
+      - name: Pull last OSTree commit 📦⬇️
+        run: |
+          ostree pull --depth=1 --repo=repo meisenzahl-daily io.elementary.desktop/x86_64/7
+
+      - name: Prepare build 🚧👷
+        run: |
+          mkdir -p artifacts
+          ln -s ../repo artifacts/repo
+
+      - name: Build repository 🚧🔨
+        run: ./scripts/build-repository.sh
+      
+      - name: Cleanup 🚧🧹
+        run: rm -rf artifacts/repo
+
+      - name: Push OSTree commit 📦⬆️
+        run: |
+          ostree-push --repo repo ostree@ostree.meisenzahl.me:/srv/ostree/repo/daily
+
+      - name: Bundle artifacts 📦🔨
+        run: tar -czvf artifacts.tar.gz artifacts
+
+      - name: Upload artifacts 📦⬆️
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts.tar.gz
